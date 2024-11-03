@@ -4,6 +4,8 @@ import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
 import { ClerkProvider } from '@clerk/nextjs';
 import NavBar from '@/components/layout/NavBar';
+import Container from '@/components/Container';
+import { Toaster } from "@/components/ui/toaster"
 const roboto = localFont({
   src: [
     {
@@ -32,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider afterSignOutUrl="/">
+    <ClerkProvider dynamic afterSignOutUrl="/">
       <html lang="en">
         <body className={roboto.className}>
           <ThemeProvider
@@ -41,9 +43,14 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <Toaster/>
             <main className="flex flex-col min-h-screen bg-secondary">
               <NavBar />
-              <section className="flex-grow">{children}</section>
+              <section className="flex-grow">
+                <Container>
+                {children}
+                </Container>
+                </section>
             </main>
           </ThemeProvider>
         </body>

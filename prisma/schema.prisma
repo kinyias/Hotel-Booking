@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch", "fullTextIndex"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model Hotels{
+  id String @id @default(uuid())
+  userId String
+  title String 
+  description String
+  image String
+  city String
+  district String
+  locationDescription String
+  googleMapAddress String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  rooms Rooms[]
+  bookings Bookings[]
+
+}
+
+model Rooms{
+  id String @id @default(uuid())
+  title String
+  description String
+  bedCount Int @default(0)
+  guestCount Int  @default(0)
+  bathroomCount Int @default(0)
+  singleBed Int @default(0)
+  doubleBed Int @default(0)
+  breakFastPrice Int
+  roomPrice Int
+  image String
+  hotelId String
+
+  Hotel Hotels? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+
+  Booking Bookings[]
+
+  @@index([hotelId])
+}
+
+model Bookings{
+  id String @id @default(uuid())
+  userName String
+  userId String
+  hotelId String
+  roomId String
+  hotelOwnerId String
+  startDate DateTime
+  endDate DateTime
+  breakFastIncluded Boolean
+  totalPrice Int
+  paymentStatus Boolean @default(false)
+  paymentIntentId String @unique
+  bookedAt DateTime @default(now())
+
+  Hotel Hotels? @relation(fields: [hotelId], references: [id])
+  Room Rooms? @relation(fields: [roomId], references: [id])
+
+  @@index([hotelId])
+  @@index([roomId])
+}
