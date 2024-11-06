@@ -24,7 +24,7 @@ export function NavMenu() {
       <DropdownMenuContent align="end">
         <DropdownMenuItem
           className="cursor-pointer flex gap-2 items-center"
-          onClick={() => router.push('hotel/new')}
+          onClick={() => router.push('/hotel/new')}
         >
           <Plus size={15} /> <span> Add Hotel</span>
         </DropdownMenuItem>

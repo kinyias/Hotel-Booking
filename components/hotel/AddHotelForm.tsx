@@ -51,6 +51,9 @@ import axios from 'axios';
 import userLocation from '@/hooks/userLocation';
 import { IDistricts } from 'vn-provinces';
 import { useRouter } from 'next/navigation';
+import AddRoomForm from '../room/AddRoomForm';
+import RoomCard from '../room/RoomCard';
+import { Separator } from '../ui/separator';
 interface AddHotelFormProps {
   hotel: HotelWithRooms | null | undefined;
 }
@@ -174,7 +177,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       setIsHotelDeleting(false);
       toast({
         variant: 'success',
-        description: 'Xoá khách sạn thành công',
+        description: 'Khách sạn đã được xoá thành công',
       });
       router.push('/hotel/new');
     } catch (error: unknown) {
@@ -213,6 +216,10 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
         setImageIsDeleting(false);
       });
   };
+
+const handleDialogueOpen = () =>{
+  setOpen(prev=>!prev)
+}
 
   return (
     <div>
@@ -456,11 +463,11 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   </AlertDescription>
                 </Alert>
               )}
-              <div className="flex justify-between gap-2 flex-wrap">
+              <div className="flex justify-between md:justify-end gap-2 flex-wrap">
                 {hotel && (
                   <Button
                     onClick={() => handleDeleteHotel(hotel)}
-                    variant="ghost"
+                    variant="danger"
                     type="button"
                     className="max-w-[150px]"
                     disabled={isHotelDeleting || isLoading}
@@ -489,23 +496,24 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                 {hotel && 
                  <Dialog open={open} onOpenChange={setOpen}>
                  <DialogTrigger>
-                  <Button type='button' variant='outline' className='max-w-[150px]'>
+                  <Button type='button' variant='success' className='max-w-[150px]'>
                   <Plus className='mr-2 h-4 w-4'/> Thêm phòng
                   </Button>
                   </DialogTrigger>
-                 <DialogContent>
-                   <DialogHeader>
+                 <DialogContent className='max-w-[900px] w-[90%]'>
+                   <DialogHeader className='px-2'>
                      <DialogTitle>Thêm phòng</DialogTitle>
                      <DialogDescription>
                        Thêm chi tiết về phòng của khách sạn
                      </DialogDescription>
                    </DialogHeader>
+                    <AddRoomForm hotel={hotel} handleDialogueOpen={handleDialogueOpen}/>
                  </DialogContent>
                </Dialog>}
                
 
                 {hotel ? (
-                  <Button className="max-w-[150px]" disabled={isLoading}>
+                  <Button className="max-w-[150px]" variant='info' disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4" /> Đang cập nhật
@@ -518,7 +526,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                     )}
                   </Button>
                 ) : (
-                  <Button className="max-w-[150px]" disabled={isLoading}>
+                  <Button className="max-w-[150px]" variant='success' disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4" /> Đang tạo
@@ -535,6 +543,17 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   </Button>
                 )}
               </div>
+              {hotel && hotel.rooms.length && <div>
+                <Separator/>
+                <h3 className='test-lg font-semibold my-4'>Phòng khách sạn</h3>
+                <div className='grid gird-cols-1 2xl:grid-cols-2 gap-6'>
+                  { 
+                    hotel.rooms.map(room=>{
+                      return <RoomCard key={room.id} hotel={{...hotel, rooms: hotel.rooms}} room={room}/>
+                    })
+                  }
+                </div>
+                </div>}
             </div>
           </div>
         </form>
