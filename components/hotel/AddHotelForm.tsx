@@ -48,7 +48,7 @@ import {
   XCircle,
 } from 'lucide-react';
 import axios from 'axios';
-import userLocation from '@/hooks/userLocation';
+import useLocation from '@/hooks/useLocation';
 import { IDistricts } from 'vn-provinces';
 import { useRouter } from 'next/navigation';
 import AddRoomForm from '../room/AddRoomForm';
@@ -89,7 +89,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
 
   const { toast } = useToast();
   const router = useRouter();
-  const { getAllCities, getAllDistricsByProvinceCode } = userLocation();
+  const { getAllCities, getAllDistricsByProvinceCode } = useLocation();
   const cities = getAllCities();
 
   const form = useForm<z.infer<typeof formSchema>>({

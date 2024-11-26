@@ -50,6 +50,7 @@ model Rooms{
 model Bookings{
   id String @id @default(uuid())
   userName String
+  userEmail String
   userId String
   hotelId String
   roomId String
@@ -57,13 +58,14 @@ model Bookings{
   startDate DateTime
   endDate DateTime
   breakFastIncluded Boolean
+  currency String
   totalPrice Int
   paymentStatus Boolean @default(false)
   paymentIntentId String @unique
   bookedAt DateTime @default(now())
 
-  Hotel Hotels? @relation(fields: [hotelId], references: [id])
-  Room Rooms? @relation(fields: [roomId], references: [id])
+  Hotel Hotels @relation(fields: [hotelId], references: [id])
+  Room Rooms @relation(fields: [roomId], references: [id])
 
   @@index([hotelId])
   @@index([roomId])
