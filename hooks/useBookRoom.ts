@@ -1,4 +1,4 @@
-import { Rooms } from '@prisma/client';
+import { Room } from '@prisma/client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 interface BookRoomStore {
@@ -12,7 +12,7 @@ interface BookRoomStore {
 }
 
 type RoomDataType = {
-  room: Rooms;
+  room: Room;
   totalPrice: number;
   breakFastIncluded: boolean;
   startDate: Date;

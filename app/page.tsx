@@ -1,20 +1,19 @@
-import { getHotels } from "@/actions/getHotels";
-import HotelList from "@/components/hotel/HotelList";
+import { getHotel } from '@/actions/getHotel';
+import HotelList from '@/components/hotel/HotelList';
 
-interface HomeProps{
-  searchParams:{
-    title: string,
-    city: string
-  }
+interface HomeProps {
+  searchParams: {
+    title: string;
+    city: string;
+  };
 }
-export default async function Home({searchParams}: HomeProps) {
-  const hotels = await getHotels(searchParams)
+export default async function Home({ searchParams }: HomeProps) {
+  const hotel = await getHotel(searchParams);
 
-  if(!hotels) return <div>Không tìm thấy khách sạn...</div>
+  if (!hotel) return <div>Không tìm thấy khách sạn...</div>;
   return (
     <div>
-     
-    <HotelList hotels={hotels}/>
+      <HotelList hotel={hotel} />
     </div>
   );
 }

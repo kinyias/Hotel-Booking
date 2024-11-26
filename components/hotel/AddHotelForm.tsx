@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { Hotels, Rooms } from '@prisma/client';
+import { Hotel, Room } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -55,10 +55,10 @@ import AddRoomForm from '../room/AddRoomForm';
 import RoomCard from '../room/RoomCard';
 import { Separator } from '../ui/separator';
 interface AddHotelFormProps {
-  hotel: HotelWithRooms | null | undefined;
+  hotel: HotelWithRoom | null | undefined;
 }
-export type HotelWithRooms = Hotels & {
-  rooms: Rooms[];
+export type HotelWithRoom = Hotel & {
+  room: Room[];
 };
 
 const formSchema = z.object({
@@ -85,7 +85,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   const [districts, setDistricts] = useState<IDistricts[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isHotelDeleting, setIsHotelDeleting] = useState(false);
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   const { toast } = useToast();
   const router = useRouter();
@@ -167,7 +167,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     }
   }
 
-  const handleDeleteHotel = async (hotel: HotelWithRooms) => {
+  const handleDeleteHotel = async (hotel: HotelWithRoom) => {
     setIsHotelDeleting(true);
     const getImageKey = (src: string) =>
       src.substring(src.lastIndexOf('/') + 1);
@@ -181,8 +181,9 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       });
       router.push('/hotel/new');
     } catch (error: unknown) {
-       // Type-checking to ensure error is an instance of Error before accessing message
-      const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred';
+      // Type-checking to ensure error is an instance of Error before accessing message
+      const errorMessage =
+        error instanceof Error ? error.message : 'An unknown error occurred';
       setIsHotelDeleting(false);
       toast({
         variant: 'destructive',
@@ -217,9 +218,9 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       });
   };
 
-const handleDialogueOpen = () =>{
-  setOpen(prev=>!prev)
-}
+  const handleDialogueOpen = () => {
+    setOpen((prev) => !prev);
+  };
 
   return (
     <div>
@@ -450,7 +451,7 @@ const handleDialogueOpen = () =>{
                   </FormItem>
                 )}
               />
-              {hotel && !hotel.rooms.length && (
+              {hotel && !hotel.room.length && (
                 <Alert className="bg-green-600 text-white">
                   <Terminal className="h-4 w-4 stroke-white" />
                   <AlertTitle>Bước cuối cùng!</AlertTitle>
@@ -493,27 +494,38 @@ const handleDialogueOpen = () =>{
                   </Button>
                 )}
 
-                {hotel && 
-                 <Dialog open={open} onOpenChange={setOpen}>
-                 <DialogTrigger>
-                  <Button type='button' variant='success' className='max-w-[150px]'>
-                  <Plus className='mr-2 h-4 w-4'/> Thêm phòng
-                  </Button>
-                  </DialogTrigger>
-                 <DialogContent className='max-w-[900px] w-[90%]'>
-                   <DialogHeader className='px-2'>
-                     <DialogTitle>Thêm phòng</DialogTitle>
-                     <DialogDescription>
-                       Thêm chi tiết về phòng của khách sạn
-                     </DialogDescription>
-                   </DialogHeader>
-                    <AddRoomForm hotel={hotel} handleDialogueOpen={handleDialogueOpen}/>
-                 </DialogContent>
-               </Dialog>}
-               
+                {hotel && (
+                  <Dialog open={open} onOpenChange={setOpen}>
+                    <DialogTrigger>
+                      <Button
+                        type="button"
+                        variant="success"
+                        className="max-w-[150px]"
+                      >
+                        <Plus className="mr-2 h-4 w-4" /> Thêm phòng
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-[900px] w-[90%]">
+                      <DialogHeader className="px-2">
+                        <DialogTitle>Thêm phòng</DialogTitle>
+                        <DialogDescription>
+                          Thêm chi tiết về phòng của khách sạn
+                        </DialogDescription>
+                      </DialogHeader>
+                      <AddRoomForm
+                        hotel={hotel}
+                        handleDialogueOpen={handleDialogueOpen}
+                      />
+                    </DialogContent>
+                  </Dialog>
+                )}
 
                 {hotel ? (
-                  <Button className="max-w-[150px]" variant='info' disabled={isLoading}>
+                  <Button
+                    className="max-w-[150px]"
+                    variant="info"
+                    disabled={isLoading}
+                  >
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4" /> Đang cập nhật
@@ -526,7 +538,11 @@ const handleDialogueOpen = () =>{
                     )}
                   </Button>
                 ) : (
-                  <Button className="max-w-[150px]" variant='success' disabled={isLoading}>
+                  <Button
+                    className="max-w-[150px]"
+                    variant="success"
+                    disabled={isLoading}
+                  >
                     {isLoading ? (
                       <>
                         <Loader2 className="mr-2 h-4 w-4" /> Đang tạo
@@ -543,17 +559,25 @@ const handleDialogueOpen = () =>{
                   </Button>
                 )}
               </div>
-              {hotel && hotel.rooms.length && <div>
-                <Separator/>
-                <h3 className='test-lg font-semibold my-4'>Phòng khách sạn</h3>
-                <div className='grid gird-cols-1 2xl:grid-cols-2 gap-6'>
-                  { 
-                    hotel.rooms.map(room=>{
-                      return <RoomCard key={room.id} hotel={{...hotel, rooms: hotel.rooms}} room={room}/>
-                    })
-                  }
+              {hotel && hotel.room.length && (
+                <div>
+                  <Separator />
+                  <h3 className="test-lg font-semibold my-4">
+                    Phòng khách sạn
+                  </h3>
+                  <div className="grid gird-cols-1 2xl:grid-cols-2 gap-6">
+                    {hotel.room.map((room) => {
+                      return (
+                        <RoomCard
+                          key={room.id}
+                          hotel={{ ...hotel, room: hotel.room }}
+                          room={room}
+                        />
+                      );
+                    })}
+                  </div>
                 </div>
-                </div>}
+              )}
             </div>
           </div>
         </form>

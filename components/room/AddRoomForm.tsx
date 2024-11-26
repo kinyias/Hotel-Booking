@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { Hotels, Rooms } from '@prisma/client';
+import { Hotel, Room } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -22,16 +22,13 @@ import { Loader2, Pencil, PencilLine, XCircle } from 'lucide-react';
 import axios from 'axios';
 import { UploadButton } from '../uploadthing';
 import { useRouter } from 'next/navigation';
-import {
-  formatNumber,
-  parseCurrency,
-} from '@/utils/formatCurrency';
+import { formatNumber, parseCurrency } from '@/utils/formatCurrency';
 
 interface AddHotelFormProps {
-  hotel?: Hotels & {
-    rooms: Rooms[];
+  hotel?: Hotel & {
+    room: Room[];
   };
-  room?: Rooms;
+  room?: Room;
   handleDialogueOpen: () => void;
 }
 

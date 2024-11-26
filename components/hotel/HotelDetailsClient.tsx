@@ -1,7 +1,7 @@
 'use client';
 
-import { Bookings } from '@prisma/client';
-import { HotelWithRooms } from './AddHotelForm';
+import { Booking } from '@prisma/client';
+import { HotelWithRoom } from './AddHotelForm';
 import useLocation from '@/hooks/useLocation';
 import Image from 'next/image';
 import AmenityItem from '../AmenityItem';
@@ -10,10 +10,10 @@ import RoomCard from '../room/RoomCard';
 
 const HotelDetailsClient = ({
   hotel,
-  bookings,
+  booking,
 }: {
-  hotel: HotelWithRooms;
-  bookings?: Bookings[];
+  hotel: HotelWithRoom;
+  booking?: Booking[];
 }) => {
   const { getCityByCode, getDistByCode } = useLocation();
   const city = getCityByCode(hotel.city);
@@ -29,7 +29,9 @@ const HotelDetailsClient = ({
         />
       </div>
       <div>
-        <h3 className="font-semibold text-xl md:text-3xl pb-2">{hotel.title}</h3>
+        <h3 className="font-semibold text-xl md:text-3xl pb-2">
+          {hotel.title}
+        </h3>
         <AmenityItem>
           <MapPin className="w-4 h-4" /> {city?.name}, {district?.name}
         </AmenityItem>
@@ -49,14 +51,23 @@ const HotelDetailsClient = ({
           </AmenityItem>
         </div>
       </div>
-      {!!hotel.rooms.length && <div>
-        <h3 className='text-lg font-semibold my-4'>Phòng</h3>
-          <div className='grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6'>
-            {hotel.rooms.map((room)=>{
-              return <RoomCard hotel={hotel} room={room} key={room.id} bookings={bookings} />
+      {!!hotel.room.length && (
+        <div>
+          <h3 className="text-lg font-semibold my-4">Phòng</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            {hotel.room.map((room) => {
+              return (
+                <RoomCard
+                  hotel={hotel}
+                  room={room}
+                  key={room.id}
+                  booking={booking}
+                />
+              );
             })}
           </div>
-        </div>}
+        </div>
+      )}
     </div>
   );
 };

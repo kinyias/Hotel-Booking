@@ -9,7 +9,7 @@ datasource db {
 }
 
 
-model Hotels{
+model Hotel{
   id String @id @default(uuid())
   userId String
   title String 
@@ -21,12 +21,12 @@ model Hotels{
   googleMapAddress String
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now())
-  rooms Rooms[]
-  bookings Bookings[]
+  room Room[]
+  booking Booking[]
 
 }
 
-model Rooms{
+model Room{
   id String @id @default(uuid())
   title String
   description String
@@ -40,14 +40,14 @@ model Rooms{
   image String
   hotelId String
 
-  Hotel Hotels? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
+  Hotel Hotel? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 
-  Booking Bookings[]
+  Booking Booking[]
 
   @@index([hotelId])
 }
 
-model Bookings{
+model Booking{
   id String @id @default(uuid())
   userName String
   userEmail String
@@ -64,8 +64,8 @@ model Bookings{
   paymentIntentId String @unique
   bookedAt DateTime @default(now())
 
-  Hotel Hotels @relation(fields: [hotelId], references: [id])
-  Room Rooms @relation(fields: [roomId], references: [id])
+  Hotel Hotel? @relation(fields: [hotelId], references: [id])
+  Room Room? @relation(fields: [roomId], references: [id])
 
   @@index([hotelId])
   @@index([roomId])

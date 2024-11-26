@@ -1,6 +1,6 @@
 'use client';
 
-import { Bookings, Hotels, Rooms } from '@prisma/client';
+import { Booking, Hotel, Room } from '@prisma/client';
 import {
   Card,
   CardTitle,
@@ -46,11 +46,11 @@ import { useAuth } from '@clerk/nextjs';
 import useBookRoom from '@/hooks/useBookRoom';
 
 interface RoomCardProps {
-  hotel?: Hotels & {
-    rooms: Rooms[]; // Fixed property name from room to rooms
+  hotel?: Hotel & {
+    room: Room[]; // Fixed property name from room to room
   };
-  room: Rooms;
-  bookings?: Bookings[];
+  room: Room;
+  booking?: Booking[];
 }
 
 const RoomCard = ({ hotel, room }: RoomCardProps) => {
@@ -91,7 +91,7 @@ const RoomCard = ({ hotel, room }: RoomCardProps) => {
     setOpen((prev) => !prev);
   };
 
-  const handleDeleteRoom = (room: Rooms) => {
+  const handleDeleteRoom = (room: Room) => {
     setIsLoading(true);
     const imageKey = room.image.substring(room.image.lastIndexOf('/') + 1);
     axios
@@ -164,23 +164,26 @@ const RoomCard = ({ hotel, room }: RoomCardProps) => {
             totalPrice,
           },
           payment_intent_id: paymentIntentId,
-        })
-      }).then((res) => {
+        }),
+      })
+        .then((res) => {
           setBookingIsLoading(false);
           if (res.status === 401) {
             return router.push('/sign-in');
           }
           return res.json();
-        }).then((data) => {
-            console.log(data);
+        })
+        .then((data) => {
+          console.log(data);
           setClientSecret(data.client_secret);
           setPaymentIntentId(data.id);
           router.push('/book-room');
-        }).catch((error) => {
-          console.log("Error:", error);
+        })
+        .catch((error) => {
+          console.log('Error:', error);
           toast({
             variant: 'destructive',
-            description:`Có lỗi xảy ra. Không thể đặt phòng vui lòng thử lại ${error.message}`,
+            description: `Có lỗi xảy ra. Không thể đặt phòng vui lòng thử lại ${error.message}`,
           });
         });
     } else {

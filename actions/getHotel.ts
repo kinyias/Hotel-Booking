@@ -1,13 +1,13 @@
 import prismadb from '@/lib/prismadb';
 
-export const getHotels = async (searchParams: {
+export const getHotel = async (searchParams: {
   title: string;
   city: string;
 }) => {
   try {
     const { title, city } = searchParams;
 
-    const hotels = await prismadb.hotels.findMany({
+    const hotel = await prismadb.hotel.findMany({
       where: {
         title: {
           contains: title,
@@ -15,10 +15,10 @@ export const getHotels = async (searchParams: {
         city,
       },
       include: {
-        rooms: true,
+        room: true,
       },
     });
-    return hotels;
+    return hotel;
   } catch (error: any) {
     console.log(error);
     throw new Error(error);
