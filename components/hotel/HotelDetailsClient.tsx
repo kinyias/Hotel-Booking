@@ -10,10 +10,10 @@ import RoomCard from '../room/RoomCard';
 
 const HotelDetailsClient = ({
   hotel,
-  booking,
+  bookings,
 }: {
   hotel: HotelWithRoom;
-  booking?: Booking[];
+  bookings?: Booking[];
 }) => {
   const { getCityByCode, getDistByCode } = useLocation();
   const city = getCityByCode(hotel.city);
@@ -61,7 +61,7 @@ const HotelDetailsClient = ({
                   hotel={hotel}
                   room={room}
                   key={room.id}
-                  booking={booking}
+                  bookings={bookings}
                 />
               );
             })}

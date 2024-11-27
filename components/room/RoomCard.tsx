@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Separator } from '../ui/separator';
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from '../ui/button';
 import {
   Dialog,
@@ -37,7 +37,7 @@ import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { DatePickerWithRange } from './DateRangePicker';
 import { DateRange } from 'react-day-picker';
-import { differenceInCalendarDays } from 'date-fns';
+import { differenceInCalendarDays, eachDayOfInterval } from 'date-fns';
 import PriceDisplay from '../PriceDisplay';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { Checkbox } from '../ui/checkbox';
@@ -50,10 +50,10 @@ interface RoomCardProps {
     room: Room[]; // Fixed property name from room to room
   };
   room: Room;
-  booking?: Booking[];
+  bookings?: Booking[];
 }
 
-const RoomCard = ({ hotel, room }: RoomCardProps) => {
+const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
   const { setRoomData, setClientSecret, paymentIntentId, setPaymentIntentId } =
     useBookRoom();
   const [isLoading, setIsLoading] = useState(false);
@@ -87,6 +87,23 @@ const RoomCard = ({ hotel, room }: RoomCardProps) => {
       }
     }
   }, [date, room.roomPrice, includeBreakFast]);
+
+  const disabledDates = useMemo(()=>{
+    let dates:Date[] = []
+
+    const roomBookings = bookings.filter(booking => booking.roomId === room.id )
+
+    roomBookings.forEach(booking=>{
+        const range = eachDayOfInterval({
+            start: new Date(booking.startDate),
+            end: new Date(booking.endDate)
+        })
+
+        dates = [...dates,...range]
+
+    })
+    return dates
+  }, [bookings])
   const handleDialogueOpen = () => {
     setOpen((prev) => !prev);
   };
@@ -259,7 +276,7 @@ const RoomCard = ({ hotel, room }: RoomCardProps) => {
           <div className="flex flex-col gap-6">
             <div>
               <div className="mb-2">Chọn ngày đặt phòng</div>
-              <DatePickerWithRange date={date} setDate={setDate} />
+              <DatePickerWithRange date={date} setDate={setDate} disabledDates={disabledDates} />
             </div>
             {room.breakFastPrice > 0 && (
               <div>

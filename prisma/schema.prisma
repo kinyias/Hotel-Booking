@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch", "fullTextIndex"]
 }
 
@@ -8,65 +8,151 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
-model Hotel{
-  id String @id @default(uuid())
-  userId String
-  title String 
-  description String
-  image String
-  city String
-  district String
+model Hotel {
+  id                  String    @id @default(uuid())
+  userId              String
+  title               String
+  description         String
+  image               String
+  city                String
+  district            String
   locationDescription String
-  googleMapAddress String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now())
-  room Room[]
-  booking Booking[]
+  googleMapAddress    String
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @default(now())
+  room                Room[]
+  booking             Booking[]
 
+  Policy       Policy[]
+  HotelService HotelService[]
 }
 
-model Room{
-  id String @id @default(uuid())
-  title String
-  description String
-  bedCount Int @default(0)
-  guestCount Int  @default(0)
-  bathroomCount Int @default(0)
-  singleBed Int @default(0)
-  doubleBed Int @default(0)
+model Room {
+  id             String @id @default(uuid())
+  title          String
+  description    String
+  bedCount       Int    @default(0)
+  guestCount     Int    @default(0)
+  bathroomCount  Int    @default(0)
+  singleBed      Int    @default(0)
+  doubleBed      Int    @default(0)
   breakFastPrice Int
-  roomPrice Int
-  image String
-  hotelId String
+  roomPrice      Int
+  image          String
+  hotelId        String
 
   Hotel Hotel? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 
-  Booking Booking[]
+  Booking     Booking[]
+  Review      Review[]
+  RoomService RoomService[]
 
   @@index([hotelId])
 }
 
-model Booking{
-  id String @id @default(uuid())
-  userName String
-  userEmail String
-  userId String
-  hotelId String
-  roomId String
-  hotelOwnerId String
-  startDate DateTime
-  endDate DateTime
+model User {
+  id          String    @id @default(uuid())
+  email       String
+  password    String
+  phoneNumber String
+  role        Int
+  Booking     Booking[]
+  Review      Review[]
+  News        News[]
+}
+
+model Booking {
+  id                String   @id @default(uuid())
+  userName          String
+  userEmail         String
+  userId            String
+  hotelId           String
+  roomId            String
+  hotelOwnerId      String
+  startDate         DateTime
+  endDate           DateTime
   breakFastIncluded Boolean
-  currency String
-  totalPrice Int
-  paymentStatus Boolean @default(false)
-  paymentIntentId String @unique
-  bookedAt DateTime @default(now())
+  currency          String
+  totalPrice        Int
+  paymentStatus     Boolean  @default(false)
+  paymentIntentId   String   @unique
+  bookedAt          DateTime @default(now())
 
   Hotel Hotel? @relation(fields: [hotelId], references: [id])
-  Room Room? @relation(fields: [roomId], references: [id])
+  Room  Room?  @relation(fields: [roomId], references: [id])
+  User  User?  @relation(fields: [userId], references: [id])
 
   @@index([hotelId])
   @@index([roomId])
+  @@index([userId])
+}
+
+model Review {
+  id         String   @id @default(uuid())
+  stars      String
+  comment    String
+  reviewDate DateTime @default(now())
+  userId     String
+  roomId     String
+
+  User User? @relation(fields: [userId], references: [id])
+  Room Room? @relation(fields: [roomId], references: [id])
+
+  @@index([userId])
+  @@index([roomId])
+}
+
+model News {
+  id          String   @id @default(uuid())
+  title       String
+  content     String
+  createdDate DateTime @default(now())
+  userId      String
+
+  User User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+}
+
+model Policy {
+  id      String @id @default(uuid())
+  title   String
+  content String
+  hotelId String
+
+  Hotel Hotel? @relation(fields: [hotelId], references: [id])
+
+  @@index([hotelId])
+}
+
+model Service {
+  id           String         @id @default(uuid())
+  name         String
+  type         String
+  HotelService HotelService[]
+  RoomService  RoomService[]
+}
+
+model HotelService {
+  id        String @id @default(uuid())
+  hotelId   String
+  serviceId String
+
+  Hotel   Hotel?   @relation(fields: [hotelId], references: [id])
+  Service Service? @relation(fields: [serviceId], references: [id])
+
+  @@index([hotelId])
+  @@index([serviceId])
+}
+
+model RoomService {
+  id        String @id @default(uuid())
+  roomId    String
+  serviceId String
+
+  Room    Room?    @relation(fields: [roomId], references: [id])
+  Service Service? @relation(fields: [serviceId], references: [id])
+
+  @@index([roomId])
+  @@index([serviceId])
 }
