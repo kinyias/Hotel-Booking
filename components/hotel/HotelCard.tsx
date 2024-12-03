@@ -7,6 +7,7 @@ import AmenityItem from '../AmenityItem';
 import { MapPin, Waves } from 'lucide-react';
 import useLocation from '@/hooks/useLocation';
 import { Button } from '../ui/button';
+import PriceDisplay from '../PriceDisplay';
 
 const HotelCard = ({ hotel }: { hotel: HotelWithRoom }) => {
   const pathname = usePathname();
@@ -55,7 +56,7 @@ const HotelCard = ({ hotel }: { hotel: HotelWithRoom }) => {
               {hotel?.room[0].roomPrice && (
                 <>
                   <div className="font-semibold text-base">
-                    {hotel?.room[0].roomPrice} VND
+                    <PriceDisplay price={hotel?.room[0].roomPrice}/>
                   </div>
                   <div className="text-xs">/ngày</div>
                 </>

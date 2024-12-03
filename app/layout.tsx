@@ -6,6 +6,7 @@ import { ClerkProvider } from '@clerk/nextjs';
 import NavBar from '@/components/layout/NavBar';
 import Container from '@/components/Container';
 import { Toaster } from "@/components/ui/toaster"
+import Footer from '@/components/layout/Footer';
 const roboto = localFont({
   src: [
     {
@@ -52,6 +53,7 @@ export default function RootLayout({
                 </Container>
                 </section>
             </main>
+            <Footer/>
           </ThemeProvider>
         </body>
       </html>
