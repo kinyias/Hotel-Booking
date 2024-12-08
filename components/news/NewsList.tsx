@@ -8,7 +8,7 @@ const newsItems = [
       title: "Top 10 Beach Destinations for 2023",
       excerpt: "Discover the most beautiful and relaxing beach getaways for your next vacation.",
       link: "/blog/top-beach-destinations-2023",
-      image: "/placeholder.svg?height=200&width=400",
+      image: "",
       author: "Emma Thompson",
       date: "May 15, 2023"
     },
@@ -16,7 +16,7 @@ const newsItems = [
       title: "How to Save Money on Your Next Hotel Booking",
       excerpt: "Learn insider tips and tricks to get the best deals on your hotel reservations.",
       link: "/blog/save-money-hotel-booking",
-      image: "/placeholder.svg?height=200&width=400",
+      image: "",
       author: "Michael Chen",
       date: "June 2, 2023"
     },
@@ -24,7 +24,7 @@ const newsItems = [
       title: "The Rise of Eco-Friendly Hotels",
       excerpt: "Explore the growing trend of sustainable and environmentally conscious accommodations.",
       link: "/blog/eco-friendly-hotels",
-      image: "/placeholder.svg?height=200&width=400",
+      image: "",
       author: "Sophia Rodriguez",
       date: "June 10, 2023"
     }

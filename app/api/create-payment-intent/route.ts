@@ -6,10 +6,9 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2024-10-28.acacia',
 });
-
 export async function POST(req: Request) {
   const user = await currentUser();
-
+  console.log(user)
   if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
@@ -53,7 +52,7 @@ export async function POST(req: Request) {
         if(!res){
             return NextResponse.error()
         }
-
+        console.log(updated_intent)
         return NextResponse.json({paymentIntent: updated_intent})
     }
   } else {
@@ -69,7 +68,7 @@ export async function POST(req: Request) {
     await prismadb.booking.create({
       data: bookingData,
     });
-
+    console.log(paymentIntent)
     return NextResponse.json(paymentIntent);
   }
 

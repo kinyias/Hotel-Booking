@@ -56,7 +56,6 @@ model User {
   password    String
   phoneNumber String
   role        Int
-  Booking     Booking[]
   Review      Review[]
   News        News[]
 }
@@ -80,11 +79,9 @@ model Booking {
 
   Hotel Hotel? @relation(fields: [hotelId], references: [id])
   Room  Room?  @relation(fields: [roomId], references: [id])
-  User  User?  @relation(fields: [userId], references: [id])
 
   @@index([hotelId])
   @@index([roomId])
-  @@index([userId])
 }
 
 model Review {
