@@ -17,10 +17,34 @@ import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import { Alert, AlertDescription, AlertTitle } from '../ui/alert';
 import { Terminal } from 'lucide-react';
+import { Booking } from '@prisma/client';
+import { endOfDay, isWithinInterval, startOfDay } from 'date-fns';
 interface RoomPaymentFormProps {
   clientSecret: string;
   handleSetPaymentSuccess: (value: boolean) => void;
 }
+
+type DateRangesType = {
+    startDate: Date,
+    endDate: Date
+}
+
+function hasOverlap(startDate: Date, endDate: Date, dateRanges: DateRangesType[] ){
+    const targetInterval = {start: startOfDay(new Date(startDate)), end: endOfDay(new Date(endDate))}
+    for(const range of dateRanges){
+        const rangeStart = startOfDay(new Date(range.startDate))
+        const rangeEnd= endOfDay(new Date(range.endDate))
+
+        if(isWithinInterval(targetInterval.start, {start: rangeStart, end: rangeEnd}) ||
+        isWithinInterval(targetInterval.end, {start: rangeStart, end: rangeEnd}) || 
+        (targetInterval.start < rangeStart && targetInterval.end > rangeEnd)
+        ){
+            return true
+        }
+    }
+    return false
+}
+
 const RoomPamentForm = ({
   clientSecret,
   handleSetPaymentSuccess,
@@ -52,14 +76,32 @@ const RoomPamentForm = ({
 
     try {
         //Date overlap
+        const bookings  = await axios.get(`/api/booking/${bookingRoomData.room.id}`)
+
+        const roomBookingDates = bookings.data.map((booking: Booking) =>{
+            return {
+                startDate: booking.startDate,
+                endDate: booking.endDate
+            }
+        })
         
+
+        const overlapFound = hasOverlap(bookingRoomData.startDate, bookingRoomData.endDate, roomBookingDates)
+
+        if(overlapFound){
+            setIsLoading(false)
+            return toast({
+                variant: 'destructive',
+                description: 'Bạn đang cố gắng đặt phòng vào những ngày đã được đặt trước. Vui lòng quay lại và chọn ngày đặt phòng khác!'
+            })
+        }
       stripe
         .confirmPayment({ elements, redirect: 'if_required' })
         .then((result) => {
           if (!result.error) {
             axios
               .patch(`api/booking/${result.paymentIntent.id}`)
-              .then((res) => {
+              .then(() => {
                 toast({
                   variant: 'success',
                   description: 'Đặt phòng thành công!',

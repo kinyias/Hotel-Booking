@@ -4,7 +4,7 @@ import {Elements} from "@stripe/react-stripe-js"
 import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
 import RoomCard from '../room/RoomCard';
 import RoomPaymentForm from './RoomPaymentForm';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
@@ -16,8 +16,13 @@ const stripePromise = loadStripe(
 const BookRoomClient = () => {
   const { bookingRoomData, clientSerect } = useBookRoom();
   const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [pageLoaded, setPageLoaded] = useState(false)
   const {theme} = useTheme()
   const router = useRouter()
+
+  useEffect(()=>{
+    setPageLoaded(true)
+  })
   const options: StripeElementsOptions = {
     clientSecret: clientSerect,
     appearance:{
@@ -29,7 +34,7 @@ const BookRoomClient = () => {
   const handleSetPaymentSuccess= (value: boolean) =>{
     setPaymentSuccess(value)
   }
-  if(!paymentSuccess && (!bookingRoomData || !clientSerect)) return <div className='flex
+  if(pageLoaded && !paymentSuccess && (!bookingRoomData || !clientSerect)) return <div className='flex
   items-center flex-col gap-4'>
     <div className='text-rose-500'>Không thể tải được trang này</div>
     <div className="flex items-center gap-4">

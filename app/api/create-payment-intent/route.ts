@@ -1,14 +1,22 @@
+'use server';
 import prismadb from '@/lib/prismadb';
-import { currentUser } from '@clerk/nextjs/server';
+import { auth, currentUser, getAuth } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: '2024-10-28.acacia',
 });
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   const user = await currentUser();
-  console.log(user)
+  console.log("Headers:", req.headers);
+  console.log('user', user);
+  return NextResponse.json({ user });
+}
+export async function POST(req: Request) {
+  console.log("Headers:", req.headers);
+  const user = await currentUser();
+  console.log('user', user);
   if (!user) {
     return new Response('Unauthorized', { status: 401 });
   }
@@ -38,22 +46,27 @@ export async function POST(req: Request) {
 
   if (foundBooking && payment_intent_id) {
     //Update
-    const current_intent = await stripe.paymentIntents.retrieve(payment_intent_id)
-    if(current_intent){
-        const updated_intent = await stripe.paymentIntents.update(payment_intent_id,{
-            amount: booking.totalPrice
-        })
-
-        const res = await prismadb.booking.update({
-            where: {paymentIntentId: payment_intent_id, userId: user.id},
-            data: bookingData
-        })
-
-        if(!res){
-            return NextResponse.error()
+    const current_intent = await stripe.paymentIntents.retrieve(
+      payment_intent_id
+    );
+    if (current_intent) {
+      const updated_intent = await stripe.paymentIntents.update(
+        payment_intent_id,
+        {
+          amount: booking.totalPrice,
         }
-        console.log(updated_intent)
-        return NextResponse.json({paymentIntent: updated_intent})
+      );
+
+      const res = await prismadb.booking.update({
+        where: { paymentIntentId: payment_intent_id, userId: user.id },
+        data: bookingData,
+      });
+
+      if (!res) {
+        return NextResponse.error();
+      }
+      console.log(updated_intent);
+      return NextResponse.json({ paymentIntent: updated_intent });
     }
   } else {
     //Create
@@ -68,7 +81,7 @@ export async function POST(req: Request) {
     await prismadb.booking.create({
       data: bookingData,
     });
-    console.log(paymentIntent)
+    console.log(paymentIntent);
     return NextResponse.json(paymentIntent);
   }
 
