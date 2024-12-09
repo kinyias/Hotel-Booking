@@ -1,6 +1,6 @@
 'use server';
 import prismadb from '@/lib/prismadb';
-import { auth, currentUser, getAuth } from '@clerk/nextjs/server';
+import {currentUser} from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 import Stripe from 'stripe';
 
