@@ -24,7 +24,7 @@ model Hotel {
   booking             Booking[]
 
   Policy       Policy[]
-  HotelService HotelService[]
+  HotelAmenity HotelAmenity[]
 }
 
 model Room {
@@ -44,21 +44,16 @@ model Room {
   Hotel Hotel? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
 
   Booking     Booking[]
+  RoomAmenity RoomAmenity[]
   Review      Review[]
-  RoomService RoomService[]
+  SeasonPricing SeasonPricing[]
+  RoomType RoomType[]
+  RoomRate RoomRate[]
+  Pax Pax[]
 
   @@index([hotelId])
 }
 
-model User {
-  id          String    @id @default(uuid())
-  email       String
-  password    String
-  phoneNumber String
-  role        Int
-  Review      Review[]
-  News        News[]
-}
 
 model Booking {
   id                String   @id @default(uuid())
@@ -79,9 +74,10 @@ model Booking {
 
   Hotel Hotel? @relation(fields: [hotelId], references: [id])
   Room  Room?  @relation(fields: [roomId], references: [id])
-
   @@index([hotelId])
   @@index([roomId])
+  Refunds Refunds[]
+  PaymentMethod PaymentMethod[]
 }
 
 model Review {
@@ -92,10 +88,8 @@ model Review {
   userId     String
   roomId     String
 
-  User User? @relation(fields: [userId], references: [id])
   Room Room? @relation(fields: [roomId], references: [id])
 
-  @@index([userId])
   @@index([roomId])
 }
 
@@ -105,8 +99,6 @@ model News {
   content     String
   createdDate DateTime @default(now())
   userId      String
-
-  User User? @relation(fields: [userId], references: [id])
 
   @@index([userId])
 }
@@ -122,34 +114,101 @@ model Policy {
   @@index([hotelId])
 }
 
-model Service {
+model Amenity {
   id           String         @id @default(uuid())
   name         String
   type         String
-  HotelService HotelService[]
-  RoomService  RoomService[]
+  HotelAmenity HotelAmenity[]
+  RoomAmenity  RoomAmenity[]
 }
 
-model HotelService {
+model HotelAmenity {
   id        String @id @default(uuid())
   hotelId   String
-  serviceId String
+  amenityId String
 
   Hotel   Hotel?   @relation(fields: [hotelId], references: [id])
-  Service Service? @relation(fields: [serviceId], references: [id])
+  Amenity Amenity? @relation(fields: [amenityId], references: [id])
 
   @@index([hotelId])
-  @@index([serviceId])
+  @@index([amenityId])
 }
 
-model RoomService {
+model RoomAmenity {
   id        String @id @default(uuid())
   roomId    String
-  serviceId String
+  amenityId String
 
   Room    Room?    @relation(fields: [roomId], references: [id])
-  Service Service? @relation(fields: [serviceId], references: [id])
+  Amenity Amenity? @relation(fields: [amenityId], references: [id])
 
   @@index([roomId])
-  @@index([serviceId])
+  @@index([amenityId])
+}
+
+model Season{
+  id String @id @default(uuid())
+  seasonName String 
+  startDate DateTime
+  endDate DateTime
+  description String
+  SeasonPricing SeasonPricing[]
+}
+
+model SeasonPricing{
+  id String @id @default(uuid())
+  price Int 
+  seasonId String
+  roomId String
+  Room    Room?    @relation(fields: [roomId], references: [id])
+  Season Season? @relation(fields: [seasonId], references: [id])
+
+  @@index([roomId])
+  @@index([seasonId])
+}
+
+model RoomType{
+  id String @id @default(uuid())
+  name String
+  roomId String
+  Room    Room?    @relation(fields: [roomId], references: [id])
+
+  @@index([roomId])
+}
+
+model RoomRate{
+  id String @id @default(uuid())
+  name String
+  description String
+
+  roomId String
+  Room    Room?    @relation(fields: [roomId], references: [id])
+}
+
+model Pax{
+  id String @id @default(uuid())
+  maxAdults Int
+  maxChildren Int
+  maxInfants Int
+
+  roomId String
+  Room    Room?    @relation(fields: [roomId], references: [id])
+}
+
+model Refunds{
+  id String @id @default(uuid())
+  refundAmount Int
+  reason String
+  status String
+  createAt DateTime
+
+  bookingId String
+  Booking    Booking?    @relation(fields: [bookingId], references: [id])
+}
+
+model PaymentMethod{
+  id String @id @default(uuid())
+  name String
+   bookingId String
+  Booking    Booking?    @relation(fields: [bookingId], references: [id])
 }
