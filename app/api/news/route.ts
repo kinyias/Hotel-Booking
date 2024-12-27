@@ -27,7 +27,6 @@ export async function POST(req: Request) {
 
 export async function GET(req: NextRequest) {
   const searchParams = req.nextUrl.searchParams;
-  console.log("serach", searchParams)
   const page = parseInt(searchParams.get('page') ?? '1');
   const result_per_page = 6;
   const total_result = await getTotalNews();
@@ -36,8 +35,6 @@ export async function GET(req: NextRequest) {
   const total_page = Math.ceil(total/6);
   const skip = (page - 1) * result_per_page;
   const take = page * result_per_page;
-  console.log("skip", skip)
-  console.log("take", take)
   try {
     const news = await prismadb.news.findMany({
       skip,

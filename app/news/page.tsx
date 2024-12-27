@@ -29,7 +29,7 @@ const News = () => {
       try {
         setisLoading(true);
         const { data } = await axios.get(
-          `${process.env.NEXT_PUBLIC_APP_URL}/api/news?page=${page}`
+          `/api/news?page=${page}`
         );
         setNews(data.news);
         setTotalPage(data.total_page);
