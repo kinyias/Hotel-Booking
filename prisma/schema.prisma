@@ -97,6 +97,7 @@ model News {
   id          String   @id @default(uuid())
   title       String
   content     String
+  image String
   createdDate DateTime @default(now())
   userId      String
 

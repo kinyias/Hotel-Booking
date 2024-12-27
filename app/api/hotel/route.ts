@@ -1,6 +1,5 @@
 import prismadb from '@/lib/prismadb';
 import { auth } from '@clerk/nextjs/server';
-import { NextApiRequest } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(req: Request) {

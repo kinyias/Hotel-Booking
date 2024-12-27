@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { BookOpenCheck, ChevronsUpDown, Hotel, Plus } from 'lucide-react';
+import { BookOpenCheck, ChevronsUpDown, Hotel, Newspaper, Plus } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -26,19 +26,25 @@ export function NavMenu() {
           className="cursor-pointer flex gap-2 items-center"
           onClick={() => router.push('/hotel/new')}
         >
-          <Plus size={15} /> <span> Add Hotel</span>
+          <Plus size={15} /> <span>Thêm khách sạn</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer flex gap-2 items-center"
           onClick={() => router.push('/my-hotels')}
         >
-          <Hotel size={15} /> <span>My Hotel</span>
+          <Hotel size={15} /> <span>KS của tôi</span>
         </DropdownMenuItem>
         <DropdownMenuItem
           className="cursor-pointer flex gap-2 items-center"
           onClick={() => router.push('/my-bookings')}
         >
-          <BookOpenCheck size={15} /> <span>My Booking</span>
+          <BookOpenCheck size={15} /> <span>Đặt phòng</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          className="cursor-pointer flex gap-2 items-center"
+          onClick={() => router.push('/my-news')}
+        >
+          <Newspaper size={15} /> <span>Tin tức của tôi</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

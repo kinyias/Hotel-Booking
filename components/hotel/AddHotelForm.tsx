@@ -174,11 +174,24 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     try {
       const imageKey = getImageKey(hotel.image);
       await axios.post('/api/uploadthing/delete', { imageKey });
+      await axios
+        .delete(`/api/hotel/${hotel.id}`)
+        .then(() => {
+          toast({
+            variant: 'success',
+            description: 'Khách sạn đã được xoá thành công',
+          });
+        })
+        .catch((err) => {
+          console.log(err)
+          toast({
+            variant: 'destructive',
+            description: 'Đã xảy ra lỗi',
+          });
+          setIsLoading(false);
+        });
       setIsHotelDeleting(false);
-      toast({
-        variant: 'success',
-        description: 'Khách sạn đã được xoá thành công',
-      });
+
       router.push('/hotel/new');
     } catch (error: unknown) {
       // Type-checking to ensure error is an instance of Error before accessing message

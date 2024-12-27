@@ -5,17 +5,14 @@ import Container from '../Container';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Button } from '../ui/button';
-import SearchInput from '../SearchInput';
 import { ModeToggle } from '../theme-toggle';
 import { NavMenu } from './NavMenu';
 import { useState } from 'react';
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
   NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from '@/components/ui/navigation-menu';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -56,7 +53,7 @@ const NavBar = () => {
             onClick={() => router.push('/')}
           >
             <Image src={'/logo.svg'} alt="logo" width="75" height="75" />
-            <div className="font-bold text-xl">Kinyias Hotel</div>
+            <div className="font-bold text-xl">Khang Hotel</div>
           </div>
           {/* Desktop Navigation */}
           <div className="hidden md:block">

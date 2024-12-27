@@ -12,6 +12,9 @@ const Footer = () => {
               <h2 className="text-lg font-semibold mb-4">Về Khang Hotel</h2>
               <p className="text-sm">
                Khang Hotel là đồ án chuyên ngành năm 4 (chuyên ngành CNTT) trường ĐH Công Nghệ Sài Gòn
+               <br />
+               Tên SV: Thái Tín Khang  <br />   
+               MSSV: DH52102716
               </p>
             </div>
             <div>
