@@ -14,7 +14,23 @@ export const getHotelsByUserId = async () => {
         userId: userId,
       },
       include: {
-        room: true,
+        room: {
+          include: {
+            Pax: true,
+            RoomAmenity: true,
+            SeasonPricing: true,
+            RoomType: {
+              select: {
+                name: true, // Fetch RoomType name
+              },
+            },
+            RoomRate: {
+              select: {
+                name: true, // Fetch RoomRate name
+              },
+            },
+          },
+        },
       },
     });
     if (!hotel) return null;

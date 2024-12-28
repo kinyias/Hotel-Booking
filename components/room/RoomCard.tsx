@@ -1,6 +1,13 @@
 'use client';
 
-import { Booking, Hotel, Room } from '@prisma/client';
+import {
+  Booking,
+  Hotel,
+  RoomAmenity,
+  Pax,
+  SeasonPricing,
+  Room,
+} from '@prisma/client';
 import {
   Card,
   CardTitle,
@@ -32,7 +39,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '../ui/dialog';
-import AddRoomForm from './AddRoomForm';
+import AddRoomForm, { IRoom } from './AddRoomForm';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { DatePickerWithRange } from './DateRangePicker';
@@ -47,9 +54,9 @@ import useBookRoom from '@/hooks/useBookRoom';
 
 interface RoomCardProps {
   hotel?: Hotel & {
-    room: Room[]; // Fixed property name from room to room
+    room: IRoom[];
   };
-  room: Room;
+  room: IRoom;
   bookings?: Booking[];
 }
 
@@ -219,7 +226,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{room.title}</CardTitle>
+        <CardTitle>{room.RoomType.name + ' ' + room.RoomRate.name + ' - ' + room.title}</CardTitle>
         <CardDescription>{room.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

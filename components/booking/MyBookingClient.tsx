@@ -29,9 +29,10 @@ import { useAuth } from '@clerk/nextjs';
 import useBookRoom from '@/hooks/useBookRoom';
 import useLocation from '@/hooks/useLocation';
 import moment from 'moment';
+import { IRoom } from '../room/AddRoomForm';
 
 interface MyBookingClientProps {
-  booking: Booking & { Room: Room | null } & { Hotel: Hotel | null };
+  booking: Booking & { Room: IRoom | null } & { Hotel: Hotel | null };
 }
 
 const MyBookingClient: React.FC<MyBookingClientProps> = ({ booking }) => {

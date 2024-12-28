@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { Hotel, Room } from '@prisma/client';
+import { Hotel, Pax, Room, RoomAmenity, SeasonPricing } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -51,14 +51,14 @@ import axios from 'axios';
 import useLocation from '@/hooks/useLocation';
 import { IDistricts } from 'vn-provinces';
 import { useRouter } from 'next/navigation';
-import AddRoomForm from '../room/AddRoomForm';
+import AddRoomForm, { IRoom } from '../room/AddRoomForm';
 import RoomCard from '../room/RoomCard';
 import { Separator } from '../ui/separator';
 interface AddHotelFormProps {
   hotel: HotelWithRoom | null | undefined;
 }
 export type HotelWithRoom = Hotel & {
-  room: Room[];
+  room: IRoom[]
 };
 
 const formSchema = z.object({
@@ -258,6 +258,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="description"

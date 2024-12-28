@@ -1,7 +1,15 @@
 'use client';
 
 import * as z from 'zod';
-import { Hotel, Room } from '@prisma/client';
+import {
+  Hotel,
+  Room,
+  Pax,
+  RoomAmenity,
+  SeasonPricing,
+  RoomType,
+  RoomRate,
+} from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -23,12 +31,33 @@ import axios from 'axios';
 import { UploadButton } from '../uploadthing';
 import { useRouter } from 'next/navigation';
 import { formatNumber, parseCurrency } from '@/utils/formatCurrency';
-
+import {
+  Select,
+  SelectValue,
+  SelectTrigger,
+  SelectItem,
+  SelectContent,
+} from '../ui/select';
+export interface IRoom extends Room {
+  RoomRate: {
+    name: string
+  }
+  RoomType: {
+    name: string
+  }
+  Pax: Pax[];
+  RoomAmenity: RoomAmenity[];
+  SeasonPricing: SeasonPricing[];
+}
+interface IItems {
+  roomType: RoomType[];
+  roomRate: RoomRate[];
+}
 interface AddHotelFormProps {
   hotel?: Hotel & {
-    room: Room[];
+    room: IRoom[];
   };
-  room?: Room;
+  room?: IRoom;
   handleDialogueOpen: () => void;
 }
 
@@ -54,6 +83,8 @@ const formSchema = z.object({
   roomPrice: z.coerce.number().min(1, {
     message: 'Cần nhập giá phòng',
   }),
+  roomTypeId: z.string().optional(),
+  roomRateId: z.string().optional(),
   image: z.string().min(1, {
     message: 'Cần thêm hình ảnh',
   }),
@@ -67,7 +98,10 @@ const AddRoomForm = ({
   const [image, setImage] = useState<string | undefined>(room?.image);
   const [imageIsDeleting, setImageIsDeleting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  const [selectItems, setSelectItems] = useState<IItems>({
+    roomType: [],
+    roomRate: [],
+  });
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -82,10 +116,23 @@ const AddRoomForm = ({
       doubleBed: 0,
       breakFastPrice: 0,
       roomPrice: 0,
+      roomTypeId: '',
+      roomRateId: '',
       image: '',
     },
   });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(`/api/room/roomType`);
+        setSelectItems(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchData();
+  }, []);
   useEffect(() => {
     if (typeof image == 'string') {
       form.setValue('image', image, {
@@ -336,6 +383,62 @@ const AddRoomForm = ({
                     <FormControl>
                       <Input type="number" min={0} max={8} {...field} />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roomTypeId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Loại phòng *</FormLabel>
+                    <FormDescription>Chọn loại phòng</FormDescription>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn loại phòng" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {selectItems.roomType.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="roomRateId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Hạng phòng *</FormLabel>
+                    <FormDescription>Chọn Hạng phòng</FormDescription>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn hạng phòng" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {selectItems.roomRate.map((item) => (
+                          <SelectItem key={item.id} value={item.id}>
+                            {item.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}

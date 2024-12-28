@@ -7,10 +7,27 @@ export const getHotelById = async (hotelId: string) => {
         id: hotelId,
       },
       include: {
-        room: true,
+        room: {
+          include: {
+            Pax: true,
+            RoomAmenity: true,
+            SeasonPricing: true,
+            RoomType: {
+              select: {
+                name: true, // Fetch RoomType name
+              },
+            },
+            RoomRate: {
+              select: {
+                name: true, // Fetch RoomRate name
+              },
+            },
+          },
+        },
       },
     });
-    if (!hotel) return null;
     return hotel;
-  } catch (error: any) {}
+  } catch (error) {
+    return null;
+  }
 };

@@ -40,18 +40,20 @@ model Room {
   roomPrice      Int
   image          String
   hotelId        String
-
+  roomTypeId     String
+  roomRateId     String
   Hotel Hotel? @relation(fields: [hotelId], references: [id], onDelete: Cascade)
-
+  RoomType RoomType? @relation(fields: [roomTypeId], references: [id], onDelete: Cascade)
+  RoomRate RoomRate? @relation(fields: [roomRateId], references: [id], onDelete: Cascade)
   Booking     Booking[]
   RoomAmenity RoomAmenity[]
   Review      Review[]
   SeasonPricing SeasonPricing[]
-  RoomType RoomType[]
-  RoomRate RoomRate[]
   Pax Pax[]
 
   @@index([hotelId])
+  @@index([roomTypeId])
+  @@index([roomRateId])
 }
 
 
@@ -171,19 +173,14 @@ model SeasonPricing{
 model RoomType{
   id String @id @default(uuid())
   name String
-  roomId String
-  Room    Room?    @relation(fields: [roomId], references: [id])
-
-  @@index([roomId])
+  Room Room[]
 }
 
 model RoomRate{
   id String @id @default(uuid())
   name String
   description String
-
-  roomId String
-  Room    Room?    @relation(fields: [roomId], references: [id])
+  Room Room[]
 }
 
 model Pax{
