@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { CalendarIcon, MapPinIcon, SearchIcon, UsersIcon } from 'lucide-react'
@@ -10,8 +9,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar"
 import { cn } from "@/lib/utils"
 import { format } from "date-fns"
+import { AutoComplete, type Option } from "../ui/autocomplete"
+import useLocation from "@/hooks/useLocation"
 const SearchForm = () => {
-    const [destination, setDestination] = useState("")
+    const [destination, setDestination] =  useState<Option>()
   const [checkIn, setCheckIn] = useState<Date>()
   const [isGuestPopoverOpen, setIsGuestPopoverOpen] = useState(false)
   const [guestInfo, setGuestInfo] = useState({
@@ -20,7 +21,12 @@ const SearchForm = () => {
     infants: 0,
     rooms: 1
   })
-
+  const { getAllCities } = useLocation();
+  const cities = getAllCities();
+  const locations = cities.map(item => ({
+    value: item.slug,
+    label: item.name
+}));
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
     // Implement search logic here
@@ -46,14 +52,23 @@ const SearchForm = () => {
             <div className="flex flex-col space-y-2">
               <Label htmlFor="destination">Điểm đến</Label>
               <div className="relative">
-                <MapPinIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" />
-                <Input
+                <MapPinIcon className="absolute left-2 h-5 w-5 top-1/2 transform -translate-y-3/4 text-gray-500" />
+                <AutoComplete
+                options={locations}
+                emptyMessage="Không có kết quả"
+                placeholder="Bạn muốn đi đâu?"
+                isLoading={false}
+                onValueChange={setDestination}
+                value={destination}
+                disabled={false}
+                />
+                {/* <Input
                   id="destination"
                   placeholder="Bạn muốn đi đâu?"
                   value={destination}
                   onChange={(e) => setDestination(e.target.value)}
                   className="pl-10"
-                />
+                /> */}
               </div>
             </div>
               <div className="flex flex-col space-y-2">
@@ -187,7 +202,7 @@ const SearchForm = () => {
             </div>
             </div>
   
-            <Button type="submit" className="w-full md:w-auto">
+            <Button type="submit" className="w-full mb-0.5 md:w-auto">
                 <SearchIcon/>
               Tìm
             </Button>

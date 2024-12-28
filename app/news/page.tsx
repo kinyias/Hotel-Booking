@@ -28,9 +28,7 @@ const News = () => {
     const fetchData = async () => {
       try {
         setisLoading(true);
-        const { data } = await axios.get(
-          `/api/news?page=${page}`
-        );
+        const { data } = await axios.get(`/api/news?page=${page}`);
         setNews(data.news);
         setTotalPage(data.total_page);
         setisLoading(false);
@@ -68,9 +66,13 @@ const News = () => {
                   </Link>
                 );
               })}
-              <PaginationItem>
-                <PaginationNext href="#" />
-              </PaginationItem>
+              <Link href={'/news?page=' + (parseInt(page) + 1)}>
+                <PaginationItem
+                  className={parseInt(page) == totalPage ? 'hidden' : ''}
+                >
+                  <PaginationNext />
+                </PaginationItem>
+              </Link>
             </PaginationContent>
           </Pagination>
         </div>

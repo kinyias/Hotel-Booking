@@ -26,7 +26,7 @@ const navItems = [
   },
   {
     title: 'Khách sạn',
-    href: '/hotels',
+    href: '/hotel',
   },
   {
     title: 'Về chúng tôi',
