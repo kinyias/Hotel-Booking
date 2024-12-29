@@ -7,6 +7,14 @@ export const getHotelById = async (hotelId: string) => {
         id: hotelId,
       },
       include: {
+        HotelAmenity: {
+          include: {
+            Amenity: true,
+          },
+          where: {
+            amenityId: { not: undefined },
+          },
+        },
         room: {
           include: {
             Pax: true,
@@ -14,12 +22,12 @@ export const getHotelById = async (hotelId: string) => {
             SeasonPricing: true,
             RoomType: {
               select: {
-                name: true, // Fetch RoomType name
+                name: true,
               },
             },
             RoomRate: {
               select: {
-                name: true, // Fetch RoomRate name
+                name: true,
               },
             },
           },

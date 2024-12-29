@@ -1,6 +1,6 @@
 'use client';
 
-import { Booking, Hotel, Room } from '@prisma/client';
+import { Booking, Hotel } from '@prisma/client';
 import {
   Card,
   CardTitle,

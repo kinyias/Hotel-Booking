@@ -13,7 +13,23 @@ export const getBookingsByUserId = async () => {
         userId: userId,
       },
       include: {
-        Room: true,
+        Room: {
+          include: {
+            Pax: true,
+            RoomAmenity: true,
+            SeasonPricing: true,
+            RoomType: {
+              select: {
+                name: true,
+              },
+            },
+            RoomRate: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
         Hotel: true,
       },
       orderBy: {

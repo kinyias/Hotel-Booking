@@ -6,14 +6,9 @@ import HotelList from '@/components/hotel/HotelList';
 import SearchForm from '@/components/hotel/SearchForm';
 import NewsList from '@/components/news/NewsList';
 
-interface HomeProps {
-  searchParams: {
-    title: string;
-    city: string;
-  };
-}
-export default async function Home({ searchParams }: HomeProps) {
-  const hotel = await getHotel(searchParams);
+
+export default async function Home() {
+  const hotel = await getHotel();
   const news =  await getNews();
   if (!hotel) return <div>Không tìm thấy khách sạn...</div>;
   return (

@@ -1,12 +1,12 @@
-import { getBookingsByHoteOwnerId } from "@/actions/getBookingsByHotelOwnerId";
+import { getBookingsByHotelOwnerId } from "@/actions/getBookingsByHotelOwnerId";
 import { getBookingsByUserId } from "@/actions/getBookingsByUserId";
 import MyBookingClient from "@/components/booking/MyBookingClient";
 
 const MyBookings = async () => {
-    const bookingsFromVisitors = await getBookingsByHoteOwnerId()
+    const bookingsFromVisitors = await getBookingsByHotelOwnerId()
     const bookingsHaveMade = await getBookingsByUserId()
 
-    if(!bookingsFromVisitors && !bookingsHaveMade) return <div>Chưa có đặt phòng nào</div>
+    if(!bookingsFromVisitors?.length && !bookingsHaveMade?.length) return <div>Chưa có đặt phòng nào</div>
     return ( <div className="flex flex-col gap-10">
         {!!bookingsHaveMade?.length && <div>
             <h2 className="text-xel md:text-2xl font-semibold mb-6 mt-2">Đây là những đơn đặt phòng của bạn</h2>

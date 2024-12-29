@@ -3,9 +3,6 @@
 import {
   Booking,
   Hotel,
-  RoomAmenity,
-  Pax,
-  SeasonPricing,
   Room,
 } from '@prisma/client';
 import {
@@ -226,7 +223,7 @@ const RoomCard = ({ hotel, room, bookings = [] }: RoomCardProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{room.RoomType.name + ' ' + room.RoomRate.name + ' - ' + room.title}</CardTitle>
+        <CardTitle> {`${room?.RoomType?.name || 'Unknown Type'} ${room?.RoomRate?.name || 'Unknown Rate'} - ${room.title}`}</CardTitle>
         <CardDescription>{room.description}</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">

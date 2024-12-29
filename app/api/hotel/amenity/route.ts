@@ -3,8 +3,12 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
     try {
-      const roomType = await prismadb.roomRate.findMany();
-      return NextResponse.json(roomType);
+      const amenity = await prismadb.amenity.findMany({
+        where:{
+            type: "Hotel"
+        }
+      });
+      return NextResponse.json(amenity);
     } catch (error) {
       console.log('Error at /api/roomType GET', error);
       return new NextResponse('Internal Server Error', { status: 500 });

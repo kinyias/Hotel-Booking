@@ -17,13 +17,19 @@ export async function PATCH(
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
+    const { HotelAmenity, ...data } = body;
     const hotel = await prismadb.hotel.update({
       where: {
         id: params.hotelId,
       },
       data: {
-        ...body,
+        ...data,
+        HotelAmenity: {
+          deleteMany: {}, // Clear existing amenities
+          create: HotelAmenity.map((amenity: { amenityId: string }) => ({
+            amenityId: amenity.amenityId,
+          })),
+        },
       },
     });
     return NextResponse.json(hotel);

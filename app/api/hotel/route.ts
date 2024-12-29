@@ -10,11 +10,16 @@ export async function POST(req: Request) {
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
+    const { HotelAmenity, ...data } = body;
     const hotel = await prismadb.hotel.create({
       data: {
-        ...body,
+        ...data,
         userId,
+        HotelAmenity: {
+          create: HotelAmenity.map((amenity: { amenityId: string }) => ({
+            amenityId: amenity.amenityId,
+          })),
+        },
       },
     });
     return NextResponse.json(hotel);

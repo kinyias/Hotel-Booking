@@ -1,7 +1,7 @@
 import prismadb from "@/lib/prismadb";
 import { auth } from "@clerk/nextjs/server"
 
-export const getBookingsByHoteOwnerId = async()=>{
+export const getBookingsByHotelOwnerId = async()=>{
     try{
         const {userId}  = await auth();
         if(!userId){
@@ -13,7 +13,23 @@ export const getBookingsByHoteOwnerId = async()=>{
                 hotelOwnerId:userId
             },
             include:{
-                Room:true,
+                Room:{
+                    include: {
+                      Pax: true,
+                      RoomAmenity: true,
+                      SeasonPricing: true,
+                      RoomType: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                      RoomRate: {
+                        select: {
+                          name: true,
+                        },
+                      },
+                    },
+                  },
                 Hotel:true
             },
             orderBy:{

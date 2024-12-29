@@ -39,15 +39,11 @@ import {
   SelectContent,
 } from '../ui/select';
 export interface IRoom extends Room {
-  RoomRate: {
-    name: string
-  }
-  RoomType: {
-    name: string
-  }
-  Pax: Pax[];
   RoomAmenity: RoomAmenity[];
-  SeasonPricing: SeasonPricing[];
+    SeasonPricing: SeasonPricing[];
+    RoomType: { name: string } | null;
+    RoomRate: { name: string } | null;
+    Pax: Pax[];
 }
 interface IItems {
   roomType: RoomType[];
@@ -74,6 +70,16 @@ const formSchema = z.object({
   guestCount: z.coerce.number().min(1, {
     message: 'Cần nhập số khách',
   }),
+  maxAdults: z.coerce.number().min(0, {
+    message: 'Cần nhập số khách',
+  }),
+  maxChildren: z.coerce.number().min(0, {
+    message: 'Cần nhập số khách',
+  }),
+  maxInfants: z.coerce.number().min(0, {
+    message: 'Cần nhập số khách',
+  }),
+  seasonPricing: z.coerce.number().optional(),
   bathroomCount: z.coerce.number().min(1, {
     message: 'Cần nhập số phòng tắm',
   }),
@@ -373,15 +379,45 @@ const AddRoomForm = ({
               />
               <FormField
                 control={form.control}
-                name="bathroomCount"
+                name="maxAdults"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Số phòng tắm *</FormLabel>
+                    <FormLabel>Số khách người lớn *</FormLabel>
                     <FormDescription>
-                      Bao nhiêu phòng tắm trong phòng
+                      Bao nhiêu người lớn có thể ở
                     </FormDescription>
                     <FormControl>
-                      <Input type="number" min={0} max={8} {...field} />
+                      <Input type="number" min={0} max={20} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="maxChildren"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số khách trẻ em *</FormLabel>
+                    <FormDescription>Bao nhiêu trẻ em có thể ở</FormDescription>
+                    <FormControl>
+                      <Input type="number" min={0} max={20} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="maxInfants"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số khách trẻ em sơ sinh *</FormLabel>
+                    <FormDescription>
+                      Bao nhiêu trẻ em sơ sinh có thể ở
+                    </FormDescription>
+                    <FormControl>
+                      <Input type="number" min={0} max={20} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -445,6 +481,22 @@ const AddRoomForm = ({
               />
             </div>
             <div className="flex-1 flex flex-col gap-6">
+              <FormField
+                control={form.control}
+                name="bathroomCount"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Số phòng tắm *</FormLabel>
+                    <FormDescription>
+                      Bao nhiêu phòng tắm trong phòng
+                    </FormDescription>
+                    <FormControl>
+                      <Input type="number" min={0} max={8} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="breakFastPrice"

@@ -1,33 +1,33 @@
 import prismadb from '@/lib/prismadb';
 
-export const getHotel = async (searchParams: {
-  title: string;
-  city: string;
-}) => {
+export const getHotel = async () => {
   try {
-    const { title, city } = searchParams;
 
     const hotel = await prismadb.hotel.findMany({
-      where: {
-        title: {
-          contains: title,
-        },
-        city,
-      },
+      skip:0,
+      take:3,
       include: {
-        room:{
+        HotelAmenity: {
+          include: {
+            Amenity: true,
+          },
+          where: {
+            amenityId: { not: undefined },
+          },
+        },
+        room: {
           include: {
             Pax: true,
             RoomAmenity: true,
             SeasonPricing: true,
             RoomType: {
               select: {
-                name: true, // Fetch RoomType name
+                name: true,
               },
             },
             RoomRate: {
               select: {
-                name: true, // Fetch RoomRate name
+                name: true,
               },
             },
           },

@@ -1,7 +1,7 @@
 'use client';
 
 import * as z from 'zod';
-import { Hotel, Pax, Room, RoomAmenity, SeasonPricing } from '@prisma/client';
+import { Amenity, Hotel, HotelAmenity } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import {
@@ -54,12 +54,18 @@ import { useRouter } from 'next/navigation';
 import AddRoomForm, { IRoom } from '../room/AddRoomForm';
 import RoomCard from '../room/RoomCard';
 import { Separator } from '../ui/separator';
+import { Checkbox } from '../ui/checkbox';
 interface AddHotelFormProps {
-  hotel: HotelWithRoom | null | undefined;
+  hotel: HotelWithRoom | null;
 }
 export type HotelWithRoom = Hotel & {
+  HotelAmenity: IHotelAmenity[]
   room: IRoom[]
 };
+
+interface IHotelAmenity extends HotelAmenity{
+  Amenity: Amenity| null;
+}
 
 const formSchema = z.object({
   title: z.string().min(3, {
@@ -77,12 +83,27 @@ const formSchema = z.object({
   locationDescription: z.string().min(10, {
     message: 'Mô tả địa chỉ phải có ít nhát 10 kí tự',
   }),
+  HotelAmenity: z.array(z.object({
+    
+    amenityId: z.string().uuid(),
+    // Amenity: z
+    //   .object({
+    //     id: z.string().uuid(),
+    //     name: z.string(),
+    //     type: z.string(),
+    //     icon: z.string(),
+    //   })
+    //   .nullable(),
+  })).min(1, {
+    message: 'Yêu cầu chọn ít nhất một tiện ích',
+  })
 });
 
 const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   const [image, setImage] = useState<string | undefined>(hotel?.image);
   const [imageIsDeleting, setImageIsDeleting] = useState(false);
   const [districts, setDistricts] = useState<IDistricts[]>([]);
+  const [amenity, setAmenity] = useState<Amenity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isHotelDeleting, setIsHotelDeleting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -102,9 +123,22 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
       district: '',
       googleMapAddress: '',
       locationDescription: '',
+      HotelAmenity: []
     },
   });
+  useEffect(() => {
+    console.log(hotel)
+    const fetchData = async () => {
+      try {
+        const { data } = await axios.get(`/api/hotel/amenity`);
+        setAmenity(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
 
+    fetchData();
+  }, []);
   useEffect(() => {
     if (typeof image == 'string') {
       form.setValue('image', image, {
@@ -281,20 +315,59 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                 <FormDescription>
                   Chọn tiện nghi phổ biến ở khách sạn của bạn
                 </FormDescription>
-                <div className="grid grid-cols-2 gap-4 mt-2">
-                  {/* <FormField
+                <div className="mt-2">
+                <FormField
+            control={form.control}
+            name="HotelAmenity"
+            render={() => (
+              <FormItem>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                {amenity.map((item) => (
+                  <FormField
+                    key={item.id}
                     control={form.control}
-                    name="description"
-                    render={({ field }) => (
-                      <FormItem className="flex flex-row items-end space-x-3 rounded-md border p-4">
-                        <FormControl>
-                          <Checkbox />
-                        </FormControl>
-                        <FormLabel>Gym</FormLabel>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  /> */}
+                    name="HotelAmenity"
+                    render={({ field }) => {
+                      return (
+                        <FormItem
+                          key={item.id}
+                          className="flex flex-row items-start space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <Checkbox
+                               checked={field.value?.some(
+                                (amenity) => amenity.amenityId === item.id
+                              )}
+                              onCheckedChange={(checked) => {
+                                const updatedValue = checked
+                                  ? [
+                                      ...field.value,
+                                      {
+                                       
+                                        amenityId: item.id,
+                                       
+                                      },
+                                    ]
+                                  : field.value?.filter(
+                                      (amenity) => amenity.amenityId !== item.id
+                                    )
+                                field.onChange(updatedValue)
+                              }}
+                            />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {item.name}
+                          </FormLabel>
+                        </FormItem>
+                      )
+                    }}
+                  />
+                ))}
+                </div>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
                 </div>
               </div>
               <FormField
