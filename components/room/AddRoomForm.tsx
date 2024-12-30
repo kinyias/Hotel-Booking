@@ -9,6 +9,7 @@ import {
   SeasonPricing,
   RoomType,
   RoomRate,
+  Amenity,
 } from '@prisma/client';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -38,12 +39,13 @@ import {
   SelectItem,
   SelectContent,
 } from '../ui/select';
+import { Checkbox } from '../ui/checkbox';
 export interface IRoom extends Room {
   RoomAmenity: RoomAmenity[];
-    SeasonPricing: SeasonPricing[];
-    RoomType: { name: string } | null;
-    RoomRate: { name: string } | null;
-    Pax: Pax[];
+  SeasonPricing: SeasonPricing[];
+  RoomType: { name: string } | null;
+  RoomRate: { name: string } | null;
+  Pax: Pax[];
 }
 interface IItems {
   roomType: RoomType[];
@@ -70,15 +72,6 @@ const formSchema = z.object({
   guestCount: z.coerce.number().min(1, {
     message: 'Cần nhập số khách',
   }),
-  maxAdults: z.coerce.number().min(0, {
-    message: 'Cần nhập số khách',
-  }),
-  maxChildren: z.coerce.number().min(0, {
-    message: 'Cần nhập số khách',
-  }),
-  maxInfants: z.coerce.number().min(0, {
-    message: 'Cần nhập số khách',
-  }),
   seasonPricing: z.coerce.number().optional(),
   bathroomCount: z.coerce.number().min(1, {
     message: 'Cần nhập số phòng tắm',
@@ -89,6 +82,22 @@ const formSchema = z.object({
   roomPrice: z.coerce.number().min(1, {
     message: 'Cần nhập giá phòng',
   }),
+  RoomAmenity: z
+    .array(
+      z.object({
+        amenityId: z.string().uuid(),
+      })
+    )
+    .min(1, {
+      message: 'Yêu cầu chọn ít nhất một tiện ích',
+    }),
+  Pax: z.array(
+    z.object({
+      maxAdults: z.number().optional(),
+      maxChildren: z.number().optional(),
+      maxInfants: z.number().optional(),
+    })
+  ),
   roomTypeId: z.string().optional(),
   roomRateId: z.string().optional(),
   image: z.string().min(1, {
@@ -108,6 +117,7 @@ const AddRoomForm = ({
     roomType: [],
     roomRate: [],
   });
+  const [amenities, setAmenities] = useState<Amenity[]>([]);
   const router = useRouter();
   const { toast } = useToast();
   const form = useForm<z.infer<typeof formSchema>>({
@@ -122,6 +132,14 @@ const AddRoomForm = ({
       doubleBed: 0,
       breakFastPrice: 0,
       roomPrice: 0,
+      RoomAmenity: [],
+      Pax: [
+        {
+          maxAdults: 0,
+          maxChildren: 0,
+          maxInfants: 0,
+        },
+      ],
       roomTypeId: '',
       roomRateId: '',
       image: '',
@@ -130,10 +148,15 @@ const AddRoomForm = ({
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const { data } = await axios.get(`/api/room/roomType`);
-        setSelectItems(data);
+        const [amenitiesResponse, roomTypesResponse] = await Promise.all([
+          axios.get(`/api/room/amenity`),
+          axios.get(`/api/room/roomType`),
+        ]);
+
+        setAmenities(amenitiesResponse.data);
+        setSelectItems(roomTypesResponse.data);
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching data:', error);
       }
     };
 
@@ -256,7 +279,59 @@ const AddRoomForm = ({
           <div>
             <FormLabel>Chọn tiện nghi</FormLabel>
             <FormDescription>Chọn tiện nghi cho phòng của bạn</FormDescription>
-            <div className="grid grid-cols-2 gap-2 mt-2"></div>
+            <div className="mt-2">
+              <FormField
+                control={form.control}
+                name="RoomAmenity"
+                render={() => (
+                  <FormItem>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
+                      {amenities.map((item) => (
+                        <FormField
+                          key={item.id}
+                          control={form.control}
+                          name="RoomAmenity"
+                          render={({ field }) => {
+                            return (
+                              <FormItem
+                                key={item.id}
+                                className="flex flex-row items-start space-x-3 space-y-0"
+                              >
+                                <FormControl>
+                                  <Checkbox
+                                    checked={field.value?.some(
+                                      (amenity) => amenity.amenityId === item.id
+                                    )}
+                                    onCheckedChange={(checked) => {
+                                      const updatedValue = checked
+                                        ? [
+                                            ...field.value,
+                                            {
+                                              amenityId: item.id,
+                                            },
+                                          ]
+                                        : field.value?.filter(
+                                            (amenity) =>
+                                              amenity.amenityId !== item.id
+                                          );
+                                      field.onChange(updatedValue);
+                                    }}
+                                  />
+                                </FormControl>
+                                <FormLabel className="font-normal">
+                                  {item.name}
+                                </FormLabel>
+                              </FormItem>
+                            );
+                          }}
+                        />
+                      ))}
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
           </div>
           <FormField
             control={form.control}
@@ -378,8 +453,107 @@ const AddRoomForm = ({
                 )}
               />
               <FormField
+  control={form.control}
+  name="Pax.0.maxAdults"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Số người lớn</FormLabel>
+      <FormDescription>Số người lớn cho phép</FormDescription>
+      <FormControl>
+        <Input type="number" min={0} max={20} {...field} onChange={(e) => field.onChange(e.target.valueAsNumber)} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+<FormField
+  control={form.control}
+  name="Pax.0.maxChildren"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Số trẻ em</FormLabel>
+      <FormDescription>Số trẻ em cho phép</FormDescription>
+      <FormControl>
+        <Input type="number" min={0} max={20} {...field}  onChange={(e) => field.onChange(e.target.valueAsNumber)} />
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+<FormField
+  control={form.control}
+  name="Pax.0.maxInfants"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel>Số trẻ sơ sinh</FormLabel>
+      <FormDescription>Số trẻ sơ sinh cho phép</FormDescription>
+      <FormControl>
+        <Input type="number" min={0} max={20} {...field}  onChange={(e) => field.onChange(e.target.valueAsNumber)}/>
+      </FormControl>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+              {/* {fields.map((field, index) => (
+                <div key={field.id}>
+                  <FormField
+                    control={form.control}
+                    name={`Pax.${index}.maxAdults`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số khách người lớn *</FormLabel>
+                        <FormDescription>
+                          Bao nhiêu người lớn có thể ở
+                        </FormDescription>
+                        <FormControl>
+                          <Input type="number" min={0} max={20} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`Pax.${index}.maxChildren`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số khách trẻ em *</FormLabel>
+                        <FormDescription>
+                          Bao nhiêu trẻ em có thể ở
+                        </FormDescription>
+                        <FormControl>
+                          <Input type="number" min={0} max={20} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name={`Pax.${index}.maxInfants`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Số khách trẻ em sơ sinh *</FormLabel>
+                        <FormDescription>
+                          Bao nhiêu trẻ em sơ sinh có thể ở
+                        </FormDescription>
+                        <FormControl>
+                          <Input type="number" min={0} max={20} {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  {index > 0 && (
+                    <Button type="button" onClick={() => remove(index)}>
+                      Xóa cấu hình Pax
+                    </Button>
+                  )}
+                </div>
+              ))} */}
+              {/* <FormField
                 control={form.control}
-                name="maxAdults"
+                name={`Pax.0.maxAdults`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Số khách người lớn *</FormLabel>
@@ -395,7 +569,7 @@ const AddRoomForm = ({
               />
               <FormField
                 control={form.control}
-                name="maxChildren"
+                name={`Pax.0.maxChildren`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Số khách trẻ em *</FormLabel>
@@ -409,7 +583,7 @@ const AddRoomForm = ({
               />
               <FormField
                 control={form.control}
-                name="maxInfants"
+                name={`Pax.0.maxInfants`}
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Số khách trẻ em sơ sinh *</FormLabel>
@@ -422,7 +596,7 @@ const AddRoomForm = ({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
+              /> */}
               <FormField
                 control={form.control}
                 name="roomTypeId"

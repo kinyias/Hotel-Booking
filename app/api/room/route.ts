@@ -10,10 +10,37 @@ export async function POST(req: Request) {
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
+    const { Pax, RoomAmenity, roomTypeId, roomRateId, hotelId, ...data } = body;
     const room = await prismadb.room.create({
       data: {
-        ...body,
+        ...data,
+        Hotel:{
+          connect: {
+            id: hotelId, // Use the RoomRate ID
+          },
+        },
+        RoomAmenity: {
+          create: RoomAmenity.map((amenity: { amenityId: string }) => ({
+            amenityId: amenity.amenityId,
+          })),
+        },
+        RoomType: {
+          connect: {
+            id: roomTypeId, // Use the RoomType ID
+          },
+        },
+        RoomRate: {
+          connect: {
+            id: roomRateId, // Use the RoomRate ID
+          },
+        },
+        Pax: {
+          create: {
+            maxAdults: Pax[0].maxAdults,
+            maxChildren: Pax[0].maxChildren,
+            maxInfants: Pax[0].maxInfants,
+          },
+        },
       },
     });
     return NextResponse.json(room);

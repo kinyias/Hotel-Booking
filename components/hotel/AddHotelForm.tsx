@@ -84,16 +84,7 @@ const formSchema = z.object({
     message: 'Mô tả địa chỉ phải có ít nhát 10 kí tự',
   }),
   HotelAmenity: z.array(z.object({
-    
     amenityId: z.string().uuid(),
-    // Amenity: z
-    //   .object({
-    //     id: z.string().uuid(),
-    //     name: z.string(),
-    //     type: z.string(),
-    //     icon: z.string(),
-    //   })
-    //   .nullable(),
   })).min(1, {
     message: 'Yêu cầu chọn ít nhất một tiện ích',
   })
@@ -103,7 +94,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
   const [image, setImage] = useState<string | undefined>(hotel?.image);
   const [imageIsDeleting, setImageIsDeleting] = useState(false);
   const [districts, setDistricts] = useState<IDistricts[]>([]);
-  const [amenity, setAmenity] = useState<Amenity[]>([]);
+  const [amenities, setAmenities] = useState<Amenity[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isHotelDeleting, setIsHotelDeleting] = useState(false);
   const [open, setOpen] = useState(false);
@@ -127,11 +118,10 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
     },
   });
   useEffect(() => {
-    console.log(hotel)
     const fetchData = async () => {
       try {
         const { data } = await axios.get(`/api/hotel/amenity`);
-        setAmenity(data);
+        setAmenities(data);
       } catch (error) {
         console.error(error);
       }
@@ -322,7 +312,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
             render={() => (
               <FormItem>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-2">
-                {amenity.map((item) => (
+                {amenities.map((item) => (
                   <FormField
                     key={item.id}
                     control={form.control}
@@ -646,7 +636,7 @@ const AddHotelForm = ({ hotel }: AddHotelFormProps) => {
                   </Button>
                 )}
               </div>
-              {hotel && hotel.room.length && (
+              {hotel && !!hotel.room.length && (
                 <div>
                   <Separator />
                   <h3 className="test-lg font-semibold my-4">

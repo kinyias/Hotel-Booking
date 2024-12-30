@@ -17,13 +17,27 @@ export async function PATCH(
     if (!userId) {
       return new NextResponse('Unauthorized', { status: 401 });
     }
-
+    const { Pax, RoomAmenity, ...data } = body;
     const room = await prismadb.room.update({
       where: {
         id: params.roomId,
       },
       data: {
-        ...body,
+        ...data,
+        RoomAmenity: {
+          deleteMany: {}, // Clear existing amenities
+          create: RoomAmenity.map((amenity: { amenityId: string }) => ({
+            amenityId: amenity.amenityId,
+          })),
+        },
+        Pax: {
+          deleteMany: {},
+          create: {
+            maxAdults: Pax[0].maxAdults,
+            maxChildren: Pax[0].maxChildren,
+            maxInfants: Pax[0].maxInfants,
+          },
+        },
       },
     });
     return NextResponse.json(room);

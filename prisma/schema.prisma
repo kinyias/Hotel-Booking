@@ -191,7 +191,7 @@ model Pax{
   maxInfants Int
 
   roomId String
-  Room    Room?    @relation(fields: [roomId], references: [id])
+  Room    Room?    @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
 
 model Refunds{
